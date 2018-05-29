@@ -1,18 +1,23 @@
 /* Javascript for RocketChatXBlock. */
 function RocketChatXBlock(runtime, element) {
 
+    var dataState;
+
     $(function ($) {
-        /* Here's where you'd do things on page load. */
+        var block = $(element).find('.rocketc_block');
+        dataState = block.attr('data-state');
     });
 
-    var setDefaultChannel = runtime.handlerUrl(element, "set_default_channel");
+    var  logoutUser= runtime.handlerUrl(element, "logout_user");
+    console.log ("Andrey was here");
 
-    $("#button", element).click(function(eventObject) {
-        var channel = $("#name", element).val();
-        var data = {channel};
+    $( window ).onbeforeunload(function() {
+        
+        dataState = JSON.parse(dataState);
+        var data = dataState
         $.ajax({
             type: "POST",
-            url: setDefaultChannel,
+            url: logoutUser,
             data: JSON.stringify(data),
         });
     });

@@ -423,3 +423,15 @@ class RocketChatXBlock(XBlock, XBlockWithSettingsMixin, StudioEditableXBlockMixi
 
         LOG.info("Method Public Create Group: %s", group)
         return group
+
+    @XBlock.json_handler
+    def logout_user(self, data, suffix=""):
+        """
+        This method allows to invalidate the user token
+        """
+        # pylint: disable=unused-argument
+
+        api = self.api_rocket_chat
+        login_token = data["authToken"]
+        user_id = data["userId"]
+        api.logout_user(user_id, login_token)

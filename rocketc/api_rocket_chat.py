@@ -197,3 +197,13 @@ class ApiRocketChat(object):
         LOG.info("Method Update User: %s with this data: %s", response, data)
         if response["success"]:
             return email
+
+    def logout_user(self, user_id, login_token):
+        """
+        This method allows to logout an user
+        """
+        url_path = "logout"
+        headers = {"X-Auth-Token": login_token, "X-User-Id": user_id}
+        url = "/".join([self.server_url, self.API_PATH, url_path])
+        response = requests.get(url=url, headers=headers)
+        LOG.info("Method logout User: %s ", response)
