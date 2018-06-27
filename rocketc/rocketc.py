@@ -11,6 +11,7 @@ from api_rocket_chat import ApiRocketChat  # pylint: disable=relative-import
 
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.core.cache import cache
 
 from xblock.core import XBlock
 from xblock.fields import Scope, String, Boolean
@@ -95,6 +96,9 @@ class RocketChatXBlock(XBlock, XBlockWithSettingsMixin, StudioEditableXBlockMixi
 
         if in_studio_runtime:
             return self.author_view(context)
+        frag = cache.get(self.user_data["anonymous_student_id"])
+        if frag:
+            return frag
 
         context = {
             "response": self.init(),
@@ -109,6 +113,8 @@ class RocketChatXBlock(XBlock, XBlockWithSettingsMixin, StudioEditableXBlockMixi
         frag.add_css(self.resource_string("static/css/rocketc.css"))
         frag.add_javascript(self.resource_string("static/js/src/rocketc.js"))
         frag.initialize_js('RocketChatXBlock')
+
+        cache.set(self.user_data["anonymous_student_id"], frag, 120)
         return frag
 
     def author_view(self, context=None):
