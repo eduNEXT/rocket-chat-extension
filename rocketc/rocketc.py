@@ -617,6 +617,8 @@ class RocketChatXBlock(XBlock, XBlockWithSettingsMixin, StudioEditableXBlockMixi
         if not messages["success"]:
             return None
 
+        LOG.info("Messages get user messages: %s ", messages)
+        LOG.info("username get user messages: %s ", self.user_data["username"])
         return [message for message in messages["messages"]
                 if message["u"]["username"] == self.user_data["username"]]
 
@@ -642,11 +644,14 @@ class RocketChatXBlock(XBlock, XBlockWithSettingsMixin, StudioEditableXBlockMixi
         from openedx_dependencies import has_discussion_privileges, CourseStaffRole  # pylint: disable=relative-import
 
         user = User.objects.get(username=username)
-
+        LOG.info("uSERNAME %s ", username)
         if user.is_staff:
+            LOG.info("uSERNAME  True ")
             return True
         if CourseStaffRole(self.user_data["course_id"]).has_user(user):
+            LOG.info("uSERNAME  True ")
             return True
+        LOG.info("uSERNAME  False ")
         return False
 
     def _grading_discussions(self):
@@ -657,10 +662,15 @@ class RocketChatXBlock(XBlock, XBlockWithSettingsMixin, StudioEditableXBlockMixi
             return
         messages = self._get_user_messages(self.user_data["default_group"],
                                            self.latest, self.oldest, self.count_messages)
+        LOG.info("Messages: %s ", messages)
         messages = list(self._filter_by_reaction_and_user_role(messages, self.emoji))
+        LOG.info("Filter Messages: %s ", messages)
+        LOG.info("Graded activity %s ", self.graded_activity)
+        LOG.info("Graded  %s ", self.grade)
         if len(messages) >= self.target_reaction:
             self.grade = self.weight
             self.runtime.publish(self, 'grade', {'value': self.grade, 'max_value': self.weight})
+            LOG.info("publish")
 
     def max_score(self):
         return self.weight
